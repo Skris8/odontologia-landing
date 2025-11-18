@@ -14,6 +14,7 @@
     .calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
     .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
     .cal-cell{height:72px;border-radius:8px;display:flex;flex-direction:column;align-items:flex-start;padding:8px;font-size:14px;background:transparent;cursor:pointer;border:1px solid transparent}
+  .cal-cell{position:relative}
     .cal-cell:hover{border-color:rgba(0,0,0,0.06)}
     .cal-cell.inactive{color:#c3c7cc;background:transparent;cursor:default}
     .cal-cell .daynum{font-weight:600}
@@ -28,6 +29,7 @@
     .appt-actions button{margin-left:8px}
     .login-box{max-width:420px;margin:20px auto;padding:16px;border-radius:10px;background:#fff}
     .muted{color:#6b7280;font-size:14px}
+  .cal-badge{position:absolute;right:8px;top:8px;background:#ff8b83;color:#fff;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:700;box-shadow:0 4px 10px rgba(0,0,0,0.08)}
     @media (max-width:900px){ .admin-wrap{flex-direction:column} }
   </style>
 </head>

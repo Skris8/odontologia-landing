@@ -1,5 +1,6 @@
 let servicesMap = {}; // service_id -> {name, price}
 let appointmentDatesSet = new Set(); // fechas con citas
+let appointmentCounts = {}; // fecha -> número de citas
 let currentDate = new Date(); // mes mostrado
 let selectedDateStr = null; // 'YYYY-MM-DD'
 
@@ -72,8 +73,12 @@ async function loadAppointmentDates(){
     const resp = await window.supabaseRest('appointments', { query: '?select=appointment_date' });
     const data = resp.data || [];
     appointmentDatesSet.clear();
+    appointmentCounts = {};
     (data || []).forEach(r => {
-      if (r && r.appointment_date) appointmentDatesSet.add(r.appointment_date);
+      if (r && r.appointment_date) {
+        appointmentDatesSet.add(r.appointment_date);
+        appointmentCounts[r.appointment_date] = (appointmentCounts[r.appointment_date] || 0) + 1;
+      }
     });
   } catch (err) {
     console.error('Error cargando fechas:', err);
@@ -114,9 +119,14 @@ function renderCalendar(){
       daynumEl.textContent = dayNum;
       cell.appendChild(daynumEl);
 
-      // marcar si hay citas ese día
-      if (appointmentDatesSet.has(iso)) {
+      // marcar si hay citas ese día y mostrar badge con contador
+      const count = appointmentCounts[iso] || 0;
+      if (count > 0) {
         cell.classList.add('has-appointments');
+        const badge = document.createElement('div');
+        badge.className = 'cal-badge';
+        badge.textContent = String(count);
+        cell.appendChild(badge);
       }
 
       // click handler

@@ -1,3 +1,90 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/bundle.min.js"></script>
-<script src="js/supabaseClient.js"></script>
-<script src="js/admin.js" defer></script>
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Agendar Cita — Dental Clinic</title>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+	<header class="site-header" role="banner">
+		<div class="container nav-container">
+			<div class="brand">
+				<img src="assets/logo.svg" alt="Dental Clinic logo" class="logo">
+				<span class="brand-name">Dental Clinic</span>
+			</div>
+			<nav class="main-nav" role="navigation" aria-label="Navegación principal">
+				<ul>
+					<li><a href="index.html" class="nav-link">Home</a></li>
+					<li><a href="book.html" class="nav-link active">Agendar Citas</a></li>
+					<li><a href="admin.html" class="nav-link">Gestionar Citas</a></li>
+				</ul>
+			</nav>
+			<div class="nav-actions">
+				<a href="admin.html" class="btn btn-outline">Login</a>
+				<button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav">☰</button>
+			</div>
+		</div>
+	</header>
+
+	<main class="container" style="padding:28px 20px">
+		<h2>Agendar cita</h2>
+		<p class="muted">Completa tus datos y elige el servicio, fecha y hora.</p>
+
+		<form id="bookingForm" style="max-width:640px;margin-top:18px;background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(12,20,30,0.04)">
+			<label for="patient_name">Nombre completo</label>
+			<input id="patient_name" name="patient_name" type="text" required style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+
+			<label for="patient_email">Email</label>
+			<input id="patient_email" name="patient_email" type="email" style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+
+			<label for="patient_phone">Teléfono</label>
+			<input id="patient_phone" name="patient_phone" type="tel" style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+
+			<label for="service_id">Servicio</label>
+			<select id="service_id" name="service_id" required style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+				<option value="">Cargando servicios…</option>
+			</select>
+
+			<div style="display:flex;gap:12px">
+				<div style="flex:1">
+					<label for="appointment_date">Fecha</label>
+					<input id="appointment_date" name="appointment_date" type="date" required style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+				</div>
+				<div style="width:160px">
+					<label for="appointment_time">Hora</label>
+					<input id="appointment_time" name="appointment_time" type="time" style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+				</div>
+			</div>
+
+			<div style="display:flex;gap:8px;justify-content:flex-end">
+				<button type="submit" class="btn btn-primary">Agendar</button>
+			</div>
+
+			<div id="formMessage" style="margin-top:12px"></div>
+		</form>
+	</main>
+
+	<footer class="site-footer">
+		<div class="container footer-inner">
+			<div>© <strong>Dental Clinic</strong> — Todos los derechos reservados</div>
+		</div>
+	</footer>
+
+	<!-- Scripts: supabase + cliente + lógica de booking -->
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/bundle.min.js"></script>
+	<script src="js/supabaseClient.js"></script>
+	<script src="js/book.js" defer></script>
+
+	<script>
+		const btn = document.querySelector('.nav-toggle');
+		const nav = document.querySelector('.main-nav ul');
+		btn.addEventListener('click', () => {
+			const expanded = btn.getAttribute('aria-expanded') === 'true';
+			btn.setAttribute('aria-expanded', (!expanded).toString());
+			nav.classList.toggle('open');
+		});
+	</script>
+</body>
+</html>

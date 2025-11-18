@@ -192,25 +192,36 @@ async function loadAppointmentsFor(dateIso){
       right.style.display = 'flex';
       right.style.alignItems = 'center';
 
-      const tag = document.createElement('span');
-      tag.className = 'tag ' + (appt.status === 'completed' ? 'completed' : appt.status === 'cancelled' ? 'cancelled' : 'scheduled');
-      tag.textContent = appt.status || 'scheduled';
+        const tag = document.createElement('span');
+        // Normalize status -> class
+  const status = appt.status || 'programada';
+  const tagClass = (status === 'realizada' || status === 'completed') ? 'completed' : status === 'cancelled' ? 'cancelled' : 'scheduled';
+  tag.className = 'tag ' + tagClass;
+  tag.textContent = status;
+  tag.dataset.status = status; // keep status in dataset so toggle reads fresh value
       right.appendChild(tag);
 
-      const actions = document.createElement('div');
-      actions.className = 'appt-actions';
-      const btnComplete = document.createElement('button');
-      btnComplete.className = 'btn btn-primary';
-      btnComplete.textContent = 'Marcar completada';
-      btnComplete.addEventListener('click', () => updateAppointmentStatus(appt.id, 'completed', btnComplete, tag));
+        const actions = document.createElement('div');
+        actions.className = 'appt-actions';
 
-      const btnCancel = document.createElement('button');
-      btnCancel.className = 'btn btn-secondary';
-      btnCancel.textContent = 'Cancelar';
-      btnCancel.addEventListener('click', () => updateAppointmentStatus(appt.id, 'cancelled', btnCancel, tag));
+    // Check button (toggle realizada/programada)
+    const btnCheck = document.createElement('button');
+    btnCheck.className = 'btn btn-check';
+    btnCheck.setAttribute('aria-label', 'Marcar como realizada');
+    btnCheck.title = 'Marcar como realizada';
+    btnCheck.innerHTML = '✓';
+  btnCheck.addEventListener('click', () => toggleAppointmentStatus(appt.id, btnCheck, tag));
 
-      actions.appendChild(btnComplete);
-      actions.appendChild(btnCancel);
+    // Delete button
+    const btnDelete = document.createElement('button');
+    btnDelete.className = 'btn btn-delete';
+    btnDelete.setAttribute('aria-label', 'Eliminar cita');
+    btnDelete.title = 'Eliminar cita';
+    btnDelete.innerHTML = '🗑️';
+    btnDelete.addEventListener('click', () => deleteAppointment(appt.id, div));
+
+    actions.appendChild(btnCheck);
+    actions.appendChild(btnDelete);
       right.appendChild(actions);
 
       div.appendChild(left);
@@ -227,7 +238,7 @@ async function loadAppointmentsFor(dateIso){
 
 /* ---------- Update appointment status ---------- */
 async function updateAppointmentStatus(id, newStatus, buttonEl, tagEl){
-  if (!confirm(`¿Marcar cita como "${newStatus}"?`)) return;
+  // generic updater used when explicit status change is needed
   buttonEl.disabled = true;
   try {
     const q = `?id=eq.${id}`;
@@ -239,8 +250,65 @@ async function updateAppointmentStatus(id, newStatus, buttonEl, tagEl){
   buttonEl.disabled = false;
   // actualizar UI: cambiar tag text + estilo
   tagEl.textContent = newStatus;
-  tagEl.className = 'tag ' + (newStatus === 'completed' ? 'completed' : newStatus === 'cancelled' ? 'cancelled' : 'scheduled');
-  // si se canceló y ya no hay citas para esa fecha, recargar appointmentDatesSet
+  tagEl.dataset.status = newStatus;
+  const tagClass = (newStatus === 'realizada' || newStatus === 'completed') ? 'completed' : newStatus === 'cancelled' ? 'cancelled' : 'scheduled';
+  tagEl.className = 'tag ' + tagClass;
+  // recargar fechas y calendario
   await loadAppointmentDates();
   renderCalendar();
+}
+
+// Toggle status realizada <-> programada (sin confirm para UX rápida)
+// Note: signature is (id, buttonEl, tagEl) — callers should pass the check button then the tag element.
+async function toggleAppointmentStatus(id, buttonEl, tagEl){
+  // read freshest status from the tag dataset (keeps UI in sync if re-rendered)
+  const current = (tagEl && tagEl.dataset && tagEl.dataset.status) ? tagEl.dataset.status : (tagEl && tagEl.textContent) || 'programada';
+  const normalized = current.toString().toLowerCase();
+  const newStatus = (normalized === 'realizada' || normalized === 'completed') ? 'programada' : 'realizada';
+
+  // optimistic UI update
+  const prevText = tagEl ? tagEl.textContent : '';
+  const prevClass = tagEl ? tagEl.className : '';
+  if (tagEl) {
+    tagEl.textContent = newStatus;
+    tagEl.dataset.status = newStatus;
+    tagEl.className = 'tag ' + ((newStatus === 'realizada' || newStatus === 'completed') ? 'completed' : 'scheduled');
+  }
+  if (buttonEl) buttonEl.disabled = true;
+
+  try {
+    const q = `?id=eq.${id}`;
+    await window.supabaseRest('appointments', { method: 'PATCH', body: { status: newStatus }, query: q });
+    // successful, refresh counts and calendar badges
+    await loadAppointmentDates();
+    renderCalendar();
+  } catch (err) {
+    // revert UI on error
+    if (tagEl) {
+      tagEl.textContent = prevText;
+      tagEl.className = prevClass;
+      tagEl.dataset.status = prevText;
+    }
+    console.error('Error toggling status:', err);
+    alert('Error actualizando estado: ' + (err.message || err));
+  } finally {
+    if (buttonEl) buttonEl.disabled = false;
+  }
+}
+
+/* ---------- Delete appointment ---------- */
+async function deleteAppointment(id, domEl){
+  if (!confirm('¿Eliminar esta cita de la base de datos? Esta acción es irreversible.')) return;
+  try {
+    const q = `?id=eq.${id}`;
+    await window.supabaseRest('appointments', { method: 'DELETE', query: q });
+    // remover del DOM
+    if (domEl && domEl.parentNode) domEl.parentNode.removeChild(domEl);
+    // recargar fechas y calendario
+    await loadAppointmentDates();
+    renderCalendar();
+  } catch (err) {
+    console.error('Error eliminando cita:', err);
+    alert('Error eliminando cita: ' + (err.message || err));
+  }
 }

@@ -47,6 +47,13 @@
 				<option value="">Cargando servicios…</option>
 			</select>
 
+			<!-- Resumen de precio -->
+			<div id="priceSummary" style="background:#fafafa;border-radius:8px;padding:10px;margin:6px 0 12px;border:1px solid #f0f0f0;display:none">
+				<div id="priceLine" style="font-weight:600">Precio: <span id="priceVal">$0.00</span></div>
+				<div id="vatLine" class="muted">IVA (12%): <span id="vatVal">$0.00</span></div>
+				<div id="totalLine" style="margin-top:6px">Total: <strong id="totalVal">$0.00</strong></div>
+			</div>
+
 			<div style="display:flex;gap:12px">
 				<div style="flex:1">
 					<label for="appointment_date">Fecha</label>

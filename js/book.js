@@ -11,27 +11,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		serviceSelect.innerHTML = '<option value="">Cargando servicios…</option>';
 		try {
-			let data, error;
-			if (window._supabaseClientOk) {
-				({ data, error } = await supabase.from('services').select('*').order('id'));
-			} else {
-				// fallback directo a REST si el SDK no está disponible
-				try {
-					const res = await fetch(`${window._SUPABASE_URL}/rest/v1/services?select=*`, {
-						headers: {
-							apikey: window._SUPABASE_ANON_KEY,
-							Authorization: `Bearer ${window._SUPABASE_ANON_KEY}`,
-							"Content-Type": "application/json",
-						}
-					});
-					if (!res.ok) throw new Error(`HTTP ${res.status}`);
-					data = await res.json();
-					error = null;
-				} catch (e) {
-					data = null; error = e;
-				}
-			}
-			if (error) throw error;
+			// Usar helper REST centralizado
+			const resp = await window.supabaseRest('services', { query: '?select=*' });
+			const data = resp.data;
 			if (!data || data.length === 0) {
 				serviceSelect.innerHTML = '<option value="">No hay servicios</option>';
 			} else {
@@ -92,60 +74,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 			const submitBtn = form.querySelector('button[type="submit"]');
 			submitBtn.disabled = true;
 			try {
-					let conflicts, errConf;
-					if (window._supabaseClientOk) {
-						({ data: conflicts, error: errConf } = await supabase
-							.from('appointments')
-							.select('id,status')
-							.eq('appointment_date', date)
-							.eq('appointment_time', time)
-							.neq('status', 'cancelled')
-							.limit(1));
-					} else {
-						try {
-							const res = await fetch(`${window._SUPABASE_URL}/rest/v1/appointments?select=id,status&appointment_date=eq.${date}&appointment_time=eq.${time}&status=not.eq.cancelled`, {
-								headers: {
-									apikey: window._SUPABASE_ANON_KEY,
-									Authorization: `Bearer ${window._SUPABASE_ANON_KEY}`,
-								}
-							});
-							if (!res.ok) throw new Error(`HTTP ${res.status}`);
-							conflicts = await res.json();
-							errConf = null;
-						} catch (e) {
-							conflicts = null; errConf = e;
-						}
-					}
-					if (errConf) throw errConf;
+
+					// comprobar conflictos por fecha y hora
+					const q = `?select=id,status&appointment_date=eq.${date}&appointment_time=eq.${time}&status=not.eq.cancelled`;
+					const respConf = await window.supabaseRest('appointments', { query: q });
+					const conflicts = respConf.data;
 					if (conflicts && conflicts.length > 0) {
 						messageEl.innerHTML = `<div class="muted">Lo siento, ya existe una cita en esa fecha y hora. Escoge otro horario.</div>`;
 						submitBtn.disabled = false;
 						return;
 					}
-
-					let insertResult, insertErr;
-					if (window._supabaseClientOk) {
-						({ data: insertResult, error: insertErr } = await supabase.from('appointments').insert([payload]));
-					} else {
-						try {
-							const res = await fetch(`${window._SUPABASE_URL}/rest/v1/appointments`, {
-								method: 'POST',
-								headers: {
-									apikey: window._SUPABASE_ANON_KEY,
-									Authorization: `Bearer ${window._SUPABASE_ANON_KEY}`,
-									"Content-Type": "application/json",
-									"Prefer": "return=representation"
-								},
-								body: JSON.stringify(payload)
-							});
-							if (!res.ok) throw new Error(`HTTP ${res.status}`);
-							insertResult = await res.json();
-							insertErr = null;
-						} catch (e) {
-							insertResult = null; insertErr = e;
-						}
-					}
-					if (insertErr) throw insertErr;
+					// insertar la cita
+					const respIns = await window.supabaseRest('appointments', { method: 'POST', body: payload });
+					const insertResult = respIns.data;
 				messageEl.innerHTML = '<div style="color:green">Cita agendada correctamente. Te contactaremos pronto.</div>';
 				form.reset();
 				priceSummary.style.display = 'none';

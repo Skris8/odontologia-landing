@@ -1,0 +1,116 @@
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/bundle.min.js"></script>
+<script src="js/supabaseClient.js"></script>
+<script src="js/admin.js" defer></script>
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gestionar Citas — Dental Clinic</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Reglas propias para admin (si ya tienes styles.css, puedes copiar esto allí) */
+    .admin-wrap{display:flex;gap:28px;padding:28px;min-height:72vh}
+    .calendar-panel{flex:1;background:#fff;border-radius:14px;padding:20px;box-shadow:0 8px 24px rgba(12,20,30,0.05)}
+    .list-panel{flex:1;background:#fff;border-radius:14px;padding:20px;box-shadow:0 8px 24px rgba(12,20,30,0.05)}
+    .calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+    .cal-cell{height:72px;border-radius:8px;display:flex;flex-direction:column;align-items:flex-start;padding:8px;font-size:14px;background:transparent;cursor:pointer;border:1px solid transparent}
+    .cal-cell:hover{border-color:rgba(0,0,0,0.06)}
+    .cal-cell.inactive{color:#c3c7cc;background:transparent;cursor:default}
+    .cal-cell .daynum{font-weight:600}
+    .cal-cell.has-appointments{background:linear-gradient(180deg, rgba(111,179,168,0.08), rgba(111,179,168,0.02));box-shadow:inset 0 -3px 0 rgba(111,179,168,0.12) }
+    .cal-cell.selected{outline:3px solid rgba(255,139,131,0.18)}
+    .appt-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(0,0,0,0.04)}
+    .appt-left{display:flex;gap:12px;align-items:center}
+    .tag{padding:6px 10px;border-radius:999px;font-weight:600}
+    .tag.scheduled{background:#f3f7f3;color:#0b5f4c}
+    .tag.completed{background:#eafaf0;color:#0b6f45}
+    .tag.cancelled{background:#fff0f0;color:#9b2a2a;border:1px solid rgba(155,42,42,0.08)}
+    .appt-actions button{margin-left:8px}
+    .login-box{max-width:420px;margin:20px auto;padding:16px;border-radius:10px;background:#fff}
+    .muted{color:#6b7280;font-size:14px}
+    @media (max-width:900px){ .admin-wrap{flex-direction:column} }
+  </style>
+</head>
+<body>
+  <!-- Reusa la nav de tu index -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <div class="brand">
+        <img src="assets/logo.svg" alt="logo" class="logo"><span class="brand-name">Dental Clinic</span>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="book.html" class="nav-link">Agendar Citas</a></li>
+          <li><a href="admin.html" class="nav-link active">Gestionar Citas</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <a href="admin.html" class="btn btn-outline" id="loginTopBtn">Login</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2 style="margin:20px 0 6px">Panel — Gestionar citas</h2>
+    <p class="muted">Visualiza las fechas con citas y haz seguimiento diario.</p>
+
+    <!-- Area de login / panel -->
+    <div id="authArea">
+      <div id="loginBox" class="login-box" style="display:none">
+        <h3>Iniciar sesión</h3>
+        <input id="admEmail" type="email" placeholder="Email" style="width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #e6e9ee">
+        <input id="admPass" type="password" placeholder="Contraseña" style="width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid #e6e9ee">
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+          <button id="btnLogin" class="btn btn-primary">Ingresar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="appArea" style="display:none">
+      <div class="admin-wrap">
+        <section class="calendar-panel" aria-label="Calendario de citas">
+          <div class="calendar-head">
+            <div style="display:flex;gap:10px;align-items:center">
+              <button id="prevMonth" class="btn btn-outline">‹</button>
+              <div style="font-weight:700" id="monthLabel">Mes Año</div>
+              <button id="nextMonth" class="btn btn-outline">›</button>
+            </div>
+            <div>
+              <button id="btnLogout" class="btn btn-secondary">Logout</button>
+            </div>
+          </div>
+
+          <div class="cal-weeklabels" style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:10px;color:#9aa0a6;font-weight:600">
+            <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+          </div>
+
+          <div id="calendarGrid" class="cal-grid"></div>
+        </section>
+
+        <aside class="list-panel" aria-label="Citas del día">
+          <h3 id="selectedDayLabel">Selecciona un día</h3>
+          <p id="summary" class="muted">Aquí verás la lista de citas del día seleccionado.</p>
+
+          <div id="appointmentsList" style="margin-top:14px"></div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>© <strong>Dental Clinic</strong></div>
+    </div>
+  </footer>
+
+  <!-- Supabase + cliente + script admin -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/bundle.min.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/admin.js" defer></script>
+</body>
+</html>

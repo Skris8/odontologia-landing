@@ -1,4 +1,36 @@
 document.addEventListener('DOMContentLoaded', async () => {
+	// Set date min to tomorrow (no bookings for today or past dates)
+	const dateInput = document.getElementById('appointment_date');
+	if (dateInput) {
+		const today = new Date();
+		const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+		const yyyy = tomorrow.getFullYear();
+		const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+		const dd = String(tomorrow.getDate()).padStart(2, '0');
+		dateInput.min = `${yyyy}-${mm}-${dd}`;
+	}
+
+	// Ensure time input exists. If it's a <select>, populate hours 6-12 as fallback.
+	const timeInput = document.getElementById('appointment_time');
+	if (timeInput) {
+		if (timeInput.tagName === 'SELECT') {
+			// If markup didn't include options, populate them (defensive)
+			if (timeInput.options.length <= 1) {
+				const hours = [6,7,8,9,10,11,12];
+				hours.forEach(h => {
+					const opt = document.createElement('option');
+					opt.value = String(h);
+					opt.textContent = String(h);
+					timeInput.appendChild(opt);
+				});
+			}
+		} else {
+			// input type=time fallback
+			timeInput.min = '06:00';
+			timeInput.max = '12:00';
+			timeInput.step = 3600; // seconds
+		}
+	}
 	const form = document.getElementById('bookingForm');
 	const serviceSelect = document.getElementById('service_id');
 	const messageEl = document.getElementById('formMessage');
@@ -61,13 +93,49 @@ document.addEventListener('DOMContentLoaded', async () => {
 				return;
 			}
 
+			// Fecha: no permitir hoy ni fechas pasadas (doble verificación en JS además del min del input)
+			const selectedDate = new Date(date + 'T00:00:00');
+			const today = new Date();
+			today.setHours(0,0,0,0);
+			if (selectedDate <= today) {
+				messageEl.innerHTML = '<div class="muted">La fecha debe ser a partir de mañana. Por favor elige una fecha futura.</div>';
+				return;
+			}
+
+			// Hora: aceptamos dos formatos:
+			// - selecciones numéricas (6..12) desde el nuevo <select>
+			// - o input type=time que devuelva HH:MM (compatibilidad)
+			let normalizedTime = null; // result as HH:MM
+			if (/^\d+$/.test(time)) {
+				const hourNum = parseInt(time, 10);
+				if (isNaN(hourNum) || hourNum < 6 || hourNum > 12) {
+					messageEl.innerHTML = '<div class="muted">Elige una hora válida entre 6 y 12.</div>';
+					return;
+				}
+				const hh = String(hourNum).padStart(2, '0');
+				normalizedTime = `${hh}:00`;
+			} else {
+				const timeMatch = /^([0-2]\d):([0-5]\d)$/.exec(time);
+				if (!timeMatch) {
+					messageEl.innerHTML = '<div class="muted">Formato de hora inválido. Usa HH:MM (ej. 07:00) o selecciona la hora.</div>';
+					return;
+				}
+				const hour = parseInt(timeMatch[1], 10);
+				const minute = parseInt(timeMatch[2], 10);
+				if (minute !== 0 || hour < 6 || hour > 12) {
+					messageEl.innerHTML = '<div class="muted">La hora debe ser en punto (00 minutos) y entre 06:00 y 12:00.</div>';
+					return;
+				}
+				normalizedTime = `${String(hour).padStart(2,'0')}:00`;
+			}
+
 		const payload = {
 			patient_name: name,
 			patient_email: email || null,
 			patient_phone: phone || null,
 			service_id: serviceId ? parseInt(serviceId, 10) : null,
 			appointment_date: date,
-			appointment_time: time || null,
+			appointment_time: normalizedTime,
 		};
 
 			// Verificar conflictos: mismo día y misma hora (excluyendo citas canceladas)
@@ -76,7 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			try {
 
 					// comprobar conflictos por fecha y hora
-					const q = `?select=id,status&appointment_date=eq.${date}&appointment_time=eq.${time}&status=not.eq.cancelled`;
+					const q = `?select=id,status&appointment_date=eq.${date}&appointment_time=eq.${normalizedTime}&status=not.eq.cancelled`;
 					const respConf = await window.supabaseRest('appointments', { query: q });
 					const conflicts = respConf.data;
 					if (conflicts && conflicts.length > 0) {

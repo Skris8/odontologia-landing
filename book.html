@@ -61,7 +61,17 @@
 				</div>
 				<div style="width:160px">
 					<label for="appointment_time">Hora</label>
-					<input id="appointment_time" name="appointment_time" type="time" style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+					<!-- Selección simple: el usuario elige un número entre 6 y 12. JS convertirá a HH:00 al enviar -->
+					<select id="appointment_time" name="appointment_time" required style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+						<option value="">Hora</option>
+						<option value="6">6 AM</option>
+						<option value="7">7 AM</option>
+						<option value="8">8 AM</option>
+						<option value="9">9 AM</option>
+						<option value="10">10 AM</option>
+						<option value="11">11 AM</option>
+						<option value="12">12 PM</option>
+					</select>
 				</div>
 			</div>
 

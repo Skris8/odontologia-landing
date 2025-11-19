@@ -18,11 +18,11 @@
 				<ul>
 					<li><a href="index.html" class="nav-link">Home</a></li>
 					<li><a href="book.html" class="nav-link active">Agendar Citas</a></li>
-					<li><a href="admin.html" class="nav-link">Gestionar Citas</a></li>
+					<li><a href="admin.html" id="adminNavLink" class="nav-link">Gestionar Citas</a></li>
 				</ul>
 			</nav>
 			<div class="nav-actions">
-				<a href="admin.html" class="btn btn-outline">Login</a>
+				<button class="btn btn-outline" id="loginTopBtn">Login</button>
 				<button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav">☰</button>
 			</div>
 		</div>
@@ -92,6 +92,7 @@
 	<!-- Scripts: supabase + cliente + lógica de booking -->
 	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/bundle.min.js"></script>
 	<script src="js/supabaseClient.js"></script>
+	<script src="js/auth-ui.js"></script>
 	<script src="js/book.js" defer></script>
 
 	<script>

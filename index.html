@@ -16,21 +16,21 @@
   <!-- NAVBAR (reutilizar en book.html y admin.html) -->
   <header class="site-header" role="banner">
     <div class="container nav-container">
-      <div class="brand">
-        <img src="assets/logo.svg" alt="Dental Clinic logo" class="logo">
-        <span class="brand-name">Dental Clinic</span>
+        <div class="brand">
+        <img src="assets/logo-dentalstar.png" alt="DentalStar logo" class="logo">
+        <span class="brand-name">DentalStar</span>
       </div>
 
       <nav class="main-nav" role="navigation" aria-label="Navegación principal">
         <ul>
           <li><a href="index.html" class="nav-link active">Home</a></li>
           <li><a href="book.html" class="nav-link">Agendar Citas</a></li>
-          <li><a href="admin.html" class="nav-link">Gestionar Citas</a></li>
+            <li><a href="admin.html" id="adminNavLink" class="nav-link">Gestionar Citas</a></li>
         </ul>
       </nav>
 
       <div class="nav-actions">
-        <a href="admin.html" class="btn btn-outline">Login</a>
+          <button class="btn btn-outline" id="loginTopBtn">Login</button>
         <button class="nav-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="main-nav">
           ☰
         </button>
@@ -40,7 +40,7 @@
 
   <!-- HERO -->
   <main>
-    <section class="hero" style="background-image: url('assets/hero.jpg')">
+    <section class="hero" style="background-image: url('assets/hero.png')">
       <div class="container hero-inner">
         <div class="hero-card" role="region" aria-label="Presentación de la clínica">
           <h1>Cuida tu sonrisa con el mejor equipo</h1>
@@ -57,46 +57,50 @@
     <!-- TRES BENEFICIOS / MISSION -->
     <section id="services" class="three-cols container">
       <article>
-        <div class="icon">🦷</div>
-        <h3>Misión y servicios</h3>
-        <p>Atención profesional con enfoque preventivo y tecnologías modernas. Limpieza, extracción y ortodoncia.</p>
+        <img src="assets/extraccion.png" alt="Extracción" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin-bottom:8px">
+        <h3>Extracción</h3>
+        <p>Procedimientos seguros y control del dolor para extracciones necesarias.</p>
       </article>
 
       <article>
-        <div class="icon">👩‍⚕️</div>
-        <h3>Equipo</h3>
-        <p>Odontólogos calificados y personal con trato humano que te acompaña en cada tratamiento.</p>
+        <img src="assets/limpieza.png" alt="Limpieza" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin-bottom:8px">
+        <h3>Limpieza</h3>
+        <p>Profilaxis profesional para mantener tu sonrisa sana y brillante.</p>
       </article>
 
       <article>
-        <div class="icon">📅</div>
-        <h3>Gestión de citas</h3>
-        <p>Agenda online, recordatorios y control de turnos para optimizar tu tiempo.</p>
+        <img src="assets/ortodoncia.png" alt="Ortodoncia" style="width:72px;height:72px;object-fit:cover;border-radius:12px;margin-bottom:8px">
+        <h3>Ortodoncia</h3>
+        <p>Soluciones estéticas y funcionales para una mordida equilibrada.</p>
       </article>
     </section>
 
     <!-- GALERÍA / BLOQUES -->
     <section class="gallery container">
       <div class="card-grid">
-        <div class="tile img" style="background-image: url('assets/thumb1.jpg')" role="img" aria-label="Instrumental dental"></div>
-        <div class="tile img" style="background-image: url('assets/thumb2.jpg')" role="img" aria-label="Paciente sonriente"></div>
-        <div class="tile img" style="background-image: url('assets/thumb3.jpg')" role="img" aria-label="Sonrisa perfecta"></div>
-        <div class="tile teal card-center">
-          <div class="icon-large">🦷</div>
-          <div class="tile-title">Servicios</div>
-          <div class="tile-sub">Limpieza • Extracción • Ortodoncia</div>
-        </div>
-        <div class="tile img" style="background-image: url('assets/thumb4.jpg')" role="img" aria-label="Consulta dental"></div>
-        <div class="tile img" style="background-image: url('assets/thumb5.jpg')" role="img" aria-label="Paciente en silla"></div>
+        <div class="tile img tile-large" style="background-image: url('assets/thumb1.png')" data-alt="Instrumental dental"></div>
+        <div class="tile img tile-medium" style="background-image: url('assets/thumb2.png')" data-alt="Paciente sonriente"></div>
+        <div class="tile img tile-small" style="background-image: url('assets/thumb3.png')" data-alt="Sonrisa perfecta"></div>
+        <div class="tile img tile-medium" style="background-image: url('assets/thumb4.png')" data-alt="Consulta dental"></div>
+        <div class="tile img tile-large" style="background-image: url('assets/thumb5.png')" data-alt="Paciente en silla"></div>
 
         <!-- Location card -->
-        <div class="tile location">
+      </div>
+
+      <!-- Location card moved and enlarged below as a centered full-width block -->
+    </section>
+
+    <section class="container" style="margin-top:22px;">
+      <section class="tile location-large" aria-label="Ubicación">
+        <div style="display:flex;align-items:center;gap:18px">
+          <img src="assets/logo-dentalstar.png" alt="DentalStar" style="height:64px;width:auto">
           <div>
-            <svg width="36" height="36" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+            <div style="font-weight:700;font-size:18px">Ubicación</div>
+            <div class="muted">Calle Falsa 123, Ciudad</div>
           </div>
-          <div class="tile-title">Ubicación</div>
-          <div class="tile-sub">Calle Falsa 123, Ciudad</div>
         </div>
+      </section>
+    </section>
       </div>
     </section>
 
@@ -119,9 +123,9 @@
       nav.classList.toggle('open');
     });
   </script>
-  <!-- Si necesitas Supabase en esta página, importa las librerías aquí:
-       <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/bundle.min.js"></script>
-       <script src="js/supabaseClient.js"></script>
-  -->
+  <!-- Supabase client + auth UI (login modal) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/bundle.min.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/auth-ui.js"></script>
 </body>
 </html>

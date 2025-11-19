@@ -20,31 +20,83 @@ const formatDateLong = (iso) => {
 const formatTime = (t) => t ? t.slice(0,5) : '—';
 
 /* ---------- Auth & boot ---------- */
+// Auth helpers are provided globally in `js/supabaseClient.js` (window.authSignIn, authSignOut, loadSession, etc.)
+const ADMIN_EMAIL = 'admin@tuclinicadominio.com';
+
+// --- Boot + UI handling with auth ---------------------------------------
 document.addEventListener('DOMContentLoaded', async () => {
-  // UI refs
   const loginBox = document.getElementById('loginBox');
   const appArea = document.getElementById('appArea');
   const loginTopBtn = document.getElementById('loginTopBtn');
   const btnLogin = document.getElementById('btnLogin');
   const btnLogout = document.getElementById('btnLogout');
 
-  // Bypass auth for local admin view (uses REST API). If later you add Supabase Auth SDK,
-  // you can re-enable the login flow. For now, show the admin area immediately.
-  try {
-    loginBox.style.display = 'none';
-    appArea.style.display = 'block';
-    await bootApp();
-  } catch (e) {
-    console.error('Error iniciando admin app:', e);
-    loginBox.style.display = 'block';
-    appArea.style.display = 'none';
+  function showLogin() {
+    if (loginBox) loginBox.style.display = 'block';
+    if (appArea) appArea.style.display = 'none';
+  }
+  function showApp() {
+    if (loginBox) loginBox.style.display = 'none';
+    if (appArea) appArea.style.display = 'block';
   }
 
-  // top login button (en nav) - simple scroll to login box if still visible
-  loginTopBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (document.getElementById('loginBox')) document.getElementById('loginBox').scrollIntoView({behavior:'smooth'});
-  });
+  // Note: top login button behavior and admin nav visibility are managed globally by `auth-ui.js`.
+
+  // Try restore session
+  const sess = window.loadSession ? window.loadSession() : null;
+  if (sess && sess.access_token) {
+    // only restore if stored user is the admin account
+    if (!sess.user || String((sess.user.email||'')).toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+      if (window.clearSession) window.clearSession();
+      showLogin();
+      return;
+    }
+    window._sessionToken = sess.access_token;
+    try {
+      // try boot app — if any protected call fails, fall back to login
+      await bootApp();
+      showApp();
+      if (window.updateAuthUI) window.updateAuthUI();
+    } catch (err) {
+      console.warn('Session restore failed:', err);
+      if (window.clearSession) window.clearSession();
+      showLogin();
+      if (window.updateAuthUI) window.updateAuthUI();
+    }
+  } else {
+    showLogin();
+    if (window.updateAuthUI) window.updateAuthUI();
+  }
+
+  // Login button handler
+  if (btnLogin) {
+    btnLogin.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const email = (document.getElementById('admEmail') || {}).value || '';
+      const password = (document.getElementById('admPass') || {}).value || '';
+      btnLogin.disabled = true;
+        try {
+        // use global authSignIn
+        const data = await (window.authSignIn ? window.authSignIn(email.trim(), password) : Promise.reject(new Error('Auth unavailable')));
+        // ensure admin user
+        if (!data || !data.user || String((data.user.email||'')).toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+          if (window.authSignOut) await window.authSignOut();
+          throw new Error('Usuario no autorizado para acceder al panel.');
+        }
+        // boot app now that we have token
+        await bootApp();
+        showApp();
+        if (window.updateAuthUI) window.updateAuthUI();
+      } catch (err) {
+        console.error('Login error', err);
+        alert('Error iniciando sesión: ' + (err.message || err));
+        showLogin();
+        if (window.updateAuthUI) window.updateAuthUI();
+      } finally {
+        btnLogin.disabled = false;
+      }
+    });
+  }
 });
 
 /* ---------- Boot / carga inicial ---------- */

@@ -39,12 +39,55 @@ html,body{height:100%;margin:0;color:var(--text);background:var(--bg);-webkit-fo
 .hero-card h1{margin:0 0 8px;font-size:28px}
 .hero-card .lead{color:var(--muted);margin-bottom:18px}
 .hero-ctas{display:flex;gap:12px}
+/* hero tweaks for overlay readability */
+.hero{position:relative}
+.hero::after{content:'';position:absolute;left:0;right:0;top:0;bottom:0;background:linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.06));border-radius:0}
+.hero-card{position:relative;z-index:2}
+
+/* services images */
+.three-cols article img{display:block;margin:0 auto}
+
+/* gallery tweaks: make mosaic feel nicer */
+.card-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.tile.img{background-size:cover;background-position:center;border-radius:12px;min-height:120px;transition:transform 220ms ease, box-shadow 220ms ease}
+.tile.img.tile-large{grid-column: span 3;grid-row: span 2;min-height:280px}
+.tile.img.tile-medium{grid-column: span 2;grid-row: span 1;min-height:180px}
+.tile.img.tile-small{grid-column: span 1;grid-row: span 1;min-height:120px}
+.tile.teal.card-center{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tile.location{border-radius:12px;padding:14px}
+
+/* hover effects for tiles */
+.tile.img:hover{transform:translateY(-6px) scale(1.03);box-shadow:0 18px 40px rgba(16,24,40,0.12)}
+.tile.img::after{content:'';position:absolute;left:0;right:0;top:0;bottom:0;border-radius:12px;box-shadow:inset 0 0 0 rgba(0,0,0,0);transition:box-shadow 220ms ease}
+.tile.img:hover::after{box-shadow:inset 0 -40px 60px rgba(0,0,0,0.08)}
+
+/* Buttons hover */
+.btn{transition:transform 160ms ease, box-shadow 160ms ease}
+.btn:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(16,24,40,0.08)}
+
+/* Location large centered */
+.location-large{background:#fff;border-radius:14px;padding:20px;box-shadow:0 10px 30px rgba(16,24,40,0.06);max-width:980px;margin:18px auto}
+
+@media (max-width:1024px){
+  .card-grid{grid-template-columns:repeat(4,1fr)}
+  .tile.img.tile-large{grid-column: span 4}
+  .tile.img.tile-medium{grid-column: span 2}
+}
+
+@media (max-width:640px){
+  .card-grid{grid-template-columns:repeat(2,1fr)}
+  .tile.img.tile-large{grid-column: span 2}
+  .location-large{padding:16px}
+}
 
 /* THREE COLUMNS */
 .three-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;padding:48px 0}
 .three-cols article{background:transparent;padding:12px}
 .three-cols .icon{font-size:28px;margin-bottom:8px}
 .three-cols h3{margin:6px 0 6px}
+.three-cols article{background:#fff;border-radius:12px;padding:18px;text-align:center;box-shadow:0 8px 24px rgba(12,20,30,0.03);transition:transform 180ms ease,box-shadow 180ms ease}
+.three-cols article:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(12,20,30,0.06)}
+.three-cols article img{margin:0 auto 8px;display:block}
 
 /* GALLERY / GRID */
 .gallery{padding:36px 0 64px}

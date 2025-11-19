@@ -53,11 +53,11 @@
         <ul>
           <li><a href="index.html" class="nav-link">Home</a></li>
           <li><a href="book.html" class="nav-link">Agendar Citas</a></li>
-          <li><a href="admin.html" class="nav-link active">Gestionar Citas</a></li>
+          <li><a href="admin.html" id="adminNavLink" class="nav-link active">Gestionar Citas</a></li>
         </ul>
       </nav>
       <div class="nav-actions">
-        <a href="admin.html" class="btn btn-outline" id="loginTopBtn">Login</a>
+        <button class="btn btn-outline" id="loginTopBtn">Login</button>
       </div>
     </div>
   </header>
@@ -88,7 +88,7 @@
               <button id="nextMonth" class="btn btn-outline">›</button>
             </div>
             <div>
-              <button id="btnLogout" class="btn btn-secondary">Logout</button>
+              <!-- Logout moved to top nav; kept placeholder div for layout -->
             </div>
           </div>
 
@@ -118,6 +118,7 @@
   <!-- Supabase + cliente + script admin -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/bundle.min.js"></script>
   <script src="js/supabaseClient.js"></script>
+  <script src="js/auth-ui.js"></script>
   <script src="js/admin.js" defer></script>
 </body>
 </html>

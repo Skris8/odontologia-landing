@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		dateInput.min = `${yyyy}-${mm}-${dd}`;
 	}
 
-	// Ensure time input exists. If it's a <select>, populate hours 6-12 as fallback.
+	// Asegurar que exista el control de hora. Si es un <select>, poblar horas 6-12 como fallback.
 	const timeInput = document.getElementById('appointment_time');
 	if (timeInput) {
 		if (timeInput.tagName === 'SELECT') {
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			if (!data || data.length === 0) {
 				serviceSelect.innerHTML = '<option value="">No hay servicios</option>';
 			} else {
-				// guardamos un mapa local para uso en cálculo de precio
+				// Guardamos un mapa local para uso en el cálculo de precio
 				window._servicesCache = {};
 				serviceSelect.innerHTML = '<option value="">Selecciona un servicio</option>' + data.map(s => {
 					window._servicesCache[s.id] = s;
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			}
 
 			// Hora: aceptamos dos formatos:
-			// - selecciones numéricas (6..12) desde el nuevo <select>
+			// - selecciones numéricas (6..12) desde el <select>
 			// - o input type=time que devuelva HH:MM (compatibilidad)
 			let normalizedTime = null; // result as HH:MM
 			if (/^\d+$/.test(time)) {

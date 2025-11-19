@@ -3,16 +3,18 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
-	<title>Agendar Cita — Dental Clinic</title>
+	<title>Agendar Cita — DentalStar</title>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+	<!-- Site header: brand and main navigation -->
 	<header class="site-header" role="banner">
 		<div class="container nav-container">
 			<div class="brand">
-				<img src="assets/logo.svg" alt="Dental Clinic logo" class="logo">
-				<span class="brand-name">Dental Clinic</span>
+				<!-- Logo: use DentalStar asset for consistent branding -->
+				<img src="assets/logo-dentalstar.png" alt="DentalStar logo" class="logo">
+				<span class="brand-name">DentalStar</span>
 			</div>
 			<nav class="main-nav" role="navigation" aria-label="Navegación principal">
 				<ul>
@@ -32,37 +34,50 @@
 		<h2>Agendar cita</h2>
 		<p class="muted">Completa tus datos y elige el servicio, fecha y hora.</p>
 
-		<form id="bookingForm" style="max-width:640px;margin-top:18px;background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(12,20,30,0.04)">
-			<label for="patient_name">Nombre completo</label>
-			<input id="patient_name" name="patient_name" type="text" required style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+		<form id="bookingForm" class="form-card">
+			<div class="form-field">
+				<label for="patient_name">Nombre completo</label>
+				<input id="patient_name" name="patient_name" type="text" required class="form-input" placeholder="Ej: María Pérez" />
+				<div class="field-help">Escribe tu nombre y apellidos completos.</div>
+			</div>
 
-			<label for="patient_email">Email</label>
-			<input id="patient_email" name="patient_email" type="email" style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+			<div class="form-field">
+				<label for="patient_email">Email</label>
+				<input id="patient_email" name="patient_email" type="email" class="form-input" placeholder="Ej: nombre@ejemplo.com" />
+				<div class="field-help">Usaremos este correo para enviarte la confirmación.</div>
+			</div>
 
-			<label for="patient_phone">Teléfono</label>
-			<input id="patient_phone" name="patient_phone" type="tel" style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+			<div class="form-field">
+				<label for="patient_phone">Teléfono</label>
+				<input id="patient_phone" name="patient_phone" type="tel" class="form-input" placeholder="Ej: 555-123-4567" />
+				<div class="field-help">Incluye código de área si aplica.</div>
+			</div>
 
-			<label for="service_id">Servicio</label>
-			<select id="service_id" name="service_id" required style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
-				<option value="">Cargando servicios…</option>
-			</select>
+			<div class="form-field">
+				<label for="service_id">Servicio</label>
+				<select id="service_id" name="service_id" required class="form-select">
+					<option value="">Cargando servicios…</option>
+				</select>
+				<div class="field-help">Selecciona el procedimiento que necesitas.</div>
+			</div>
 
 			<!-- Resumen de precio -->
-			<div id="priceSummary" style="background:#fafafa;border-radius:8px;padding:10px;margin:6px 0 12px;border:1px solid #f0f0f0;display:none">
-				<div id="priceLine" style="font-weight:600">Precio: <span id="priceVal">$0.00</span></div>
+			<div id="priceSummary" class="price-summary" style="display:none">
+				<div id="priceLine" class="price-line">Precio: <span id="priceVal">$0.00</span></div>
 				<div id="vatLine" class="muted">IVA (12%): <span id="vatVal">$0.00</span></div>
 				<div id="totalLine" style="margin-top:6px">Total: <strong id="totalVal">$0.00</strong></div>
 			</div>
 
-			<div style="display:flex;gap:12px">
-				<div style="flex:1">
+			<div style="display:flex;gap:12px;flex-wrap:wrap">
+				<div style="flex:1;min-width:180px">
 					<label for="appointment_date">Fecha</label>
-					<input id="appointment_date" name="appointment_date" type="date" required style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+					<input id="appointment_date" name="appointment_date" type="date" required class="form-input">
+					<div class="field-help">La fecha debe ser posterior al día actual.</div>
 				</div>
-				<div style="width:160px">
+				<div style="width:160px;min-width:120px">
 					<label for="appointment_time">Hora</label>
 					<!-- Selección simple: el usuario elige un número entre 6 y 12. JS convertirá a HH:00 al enviar -->
-					<select id="appointment_time" name="appointment_time" required style="width:100%;padding:10px;margin:6px 0 12px;border-radius:8px;border:1px solid #e6e9ee">
+					<select id="appointment_time" name="appointment_time" required class="form-select">
 						<option value="">Hora</option>
 						<option value="6">6 AM</option>
 						<option value="7">7 AM</option>
@@ -72,10 +87,11 @@
 						<option value="11">11 AM</option>
 						<option value="12">12 PM</option>
 					</select>
+					<div class="field-help">Selecciona la hora exacta (ej: 9 AM).</div>
 				</div>
 			</div>
 
-			<div style="display:flex;gap:8px;justify-content:flex-end">
+			<div class="form-actions">
 				<button type="submit" class="btn btn-primary">Agendar</button>
 			</div>
 
@@ -85,11 +101,11 @@
 
 	<footer class="site-footer">
 		<div class="container footer-inner">
-			<div>© <strong>Dental Clinic</strong> — Todos los derechos reservados</div>
+			<div>© <strong>DentalStar</strong> — Todos los derechos reservados</div>
 		</div>
 	</footer>
 
-	<!-- Scripts: supabase + cliente + lógica de booking -->
+	<!-- Scripts: Supabase client, auth UI and booking logic -->
 	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/bundle.min.js"></script>
 	<script src="js/supabaseClient.js"></script>
 	<script src="js/auth-ui.js"></script>

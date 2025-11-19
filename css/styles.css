@@ -120,3 +120,50 @@ html,body{height:100%;margin:0;color:var(--text);background:var(--bg);-webkit-fo
   .hero-card{padding:22px;border-radius:14px}
   .hero-card h1{font-size:20px}
 }
+
+/* ---------- Form + Booking UI enhancements (similar to home) ---------- */
+.form-card{max-width:720px;margin-top:18px;background:#fff;padding:22px;border-radius:14px;box-shadow:0 12px 36px rgba(16,24,40,0.06)}
+.form-field{margin-bottom:14px;display:block}
+.form-field label{display:block;font-weight:700;margin-bottom:6px}
+.form-input,.form-select{width:100%;padding:12px;border-radius:10px;border:1px solid #e6e9ee;transition:box-shadow 160ms ease,transform 160ms ease}
+.form-input:focus,.form-select:focus{outline:none;box-shadow:0 8px 20px rgba(111,179,168,0.12);transform:translateY(-3px)}
+.field-help{color:var(--muted);font-size:13px;margin-top:6px;opacity:0.88}
+.placeholder-example{color:rgba(34,34,34,0.4)}
+.price-summary{background:#fbfffd;border-radius:10px;padding:12px;margin:6px 0 12px;border:1px solid rgba(111,179,168,0.08)}
+.price-line{font-weight:700}
+
+/* Make the submit area feel like a CTA card */
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+.btn-primary{padding:12px 20px;border-radius:12px}
+
+/* Subtle hover for calendar cells and appointment items to match home tiles */
+.cal-cell:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(16,24,40,0.08)}
+.appt-item{transition:transform 160ms ease,box-shadow 160ms ease}
+.appt-item:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(16,24,40,0.06)}
+
+/* improve action icons/buttons */
+.appt-actions .btn{width:auto;min-width:40px;height:40px;padding:8px 10px;border-radius:10px}
+.btn-check{border:0}
+.btn-delete{border:1px solid rgba(0,0,0,0.06)}
+
+/* Small responsive tweaks for forms */
+@media (max-width:640px){
+  .form-card{padding:16px}
+  .form-actions{justify-content:stretch}
+}
+
+/* small utility */
+.muted.small{font-size:13px;color:var(--muted)}
+
+/* Specific gallery adjustments for thumb6/thumb7 visual alignment */
+/* Make an element occupy the remaining half-row next to a large tile (3 columns) */
+.tile-fill{grid-column: span 3;grid-row: span 2;min-height:280px}
+/* Make an element taller (span two rows) to align with adjacent taller images */
+.tile-taller{grid-row: span 2;min-height:300px}
+.tile-taller.tile-medium{min-height:260px}
+.tile-img-cover{background-size:cover;background-position:center}
+/* Decorative tile to fill small blank areas in the gallery */
+.tile-decor{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,139,131,0.06), rgba(111,179,168,0.04));color:var(--text);grid-column: span 1;grid-row: span 2;min-height:240px}
+.tile-decor .decor-title{font-weight:700;font-size:18px;margin-bottom:6px}
+.tile-decor .decor-sub{color:var(--muted);font-size:14px}
+.tile-decor .decor-cta{margin-top:12px}

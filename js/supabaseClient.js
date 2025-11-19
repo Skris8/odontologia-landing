@@ -1,5 +1,5 @@
-// Supabase configuración mínima para este front-end
-// NOTA: el ANON KEY es público en el cliente; asegúrate de configurar RLS/policies en Supabase.
+// Configuración mínima de Supabase para este front-end
+// NOTA: la ANON KEY es pública en el cliente; asegúrate de configurar RLS/policies en Supabase para producción.
 const SUPABASE_URL = 'https://ghycowpawlhuyzzhonrq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoeWNvd3Bhd2xodXl6emhvbnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MzcwNzgsImV4cCI6MjA3OTAxMzA3OH0.wyfgw5_U0_EiNO-2B78l_DlECq02EWj0CuB3Mz7Khdk'; // anon key
 
@@ -9,7 +9,7 @@ window._SUPABASE_URL = SUPABASE_URL;
 window._SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
 window._sessionToken = null; // access_token cuando el usuario inicie sesión
 
-// Helper simple para llamar la REST API de Supabase (tablePath es p.e. 'services' o 'appointments')
+// Helper simple para llamar a la API REST de Supabase (tablePath, p. ej. 'services' o 'appointments')
 window.supabaseRest = async function supabaseRest(tablePath, { method = 'GET', body = null, query = '' } = {}) {
   const url = `${SUPABASE_URL}/rest/v1/${tablePath}${query}`;
   const headers = {
@@ -43,10 +43,10 @@ window.supabaseRest = async function supabaseRest(tablePath, { method = 'GET', b
   return { data, status: res.status };
 };
 
-// Export mínimos
+// Exportaciones mínimas
 window.supabase = null; // mantenemos para compatibilidad si algún script lo busca
 
-// ---- Auth helpers expuestos globalmente ----
+// ---- Helpers de autenticación expuestos globalmente ----
 const SESSION_KEY = 'supabase_session';
 
 window.loadSession = function() {

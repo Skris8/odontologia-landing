@@ -4,7 +4,7 @@ let appointmentCounts = {}; // fecha -> número de citas
 let currentDate = new Date(); // mes mostrado
 let selectedDateStr = null; // 'YYYY-MM-DD'
 
-/* ---------- Helpers ---------- */
+/* ---------- Utilidades ---------- */
 const toISODate = (d) => {
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -19,11 +19,11 @@ const formatDateLong = (iso) => {
 
 const formatTime = (t) => t ? t.slice(0,5) : '—';
 
-/* ---------- Auth & boot ---------- */
-// Auth helpers are provided globally in `js/supabaseClient.js` (window.authSignIn, authSignOut, loadSession, etc.)
+/* ---------- Autenticación y arranque ---------- */
+// Los helpers de auth se exponen globalmente en `js/supabaseClient.js` (window.authSignIn, authSignOut, loadSession, etc.)
 const ADMIN_EMAIL = 'admin@tuclinicadominio.com';
 
-// --- Boot + UI handling with auth ---------------------------------------
+// --- Arranque y manejo UI con autenticación ---------------------------------------
 document.addEventListener('DOMContentLoaded', async () => {
   const loginBox = document.getElementById('loginBox');
   const appArea = document.getElementById('appArea');
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (appArea) appArea.style.display = 'block';
   }
 
-  // Note: top login button behavior and admin nav visibility are managed globally by `auth-ui.js`.
+  // Nota: el comportamiento del botón de login superior y la visibilidad del nav admin se gestionan desde `auth-ui.js`.
 
   // Try restore session
   const sess = window.loadSession ? window.loadSession() : null;
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.updateAuthUI) window.updateAuthUI();
   }
 
-  // Login button handler
+  // Manejador del botón de login
   if (btnLogin) {
     btnLogin.addEventListener('click', async (e) => {
       e.preventDefault();
@@ -76,14 +76,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       const password = (document.getElementById('admPass') || {}).value || '';
       btnLogin.disabled = true;
         try {
-        // use global authSignIn
-        const data = await (window.authSignIn ? window.authSignIn(email.trim(), password) : Promise.reject(new Error('Auth unavailable')));
+        // usar authSignIn global
+        const data = await (window.authSignIn ? window.authSignIn(email.trim(), password) : Promise.reject(new Error('Auth no disponible')));
         // ensure admin user
         if (!data || !data.user || String((data.user.email||'')).toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
           if (window.authSignOut) await window.authSignOut();
           throw new Error('Usuario no autorizado para acceder al panel.');
         }
-        // boot app now that we have token
+        // arrancar la aplicación ahora que tenemos token
         await bootApp();
         showApp();
         if (window.updateAuthUI) window.updateAuthUI();
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-/* ---------- Boot / carga inicial ---------- */
+/* ---------- Arranque / carga inicial ---------- */
 async function bootApp(){
   await loadServices();
   await loadAppointmentDates();
@@ -107,7 +107,7 @@ async function bootApp(){
   attachMonthNav();
 }
 
-/* ---------- Services (para mostrar nombre del servicio) ---------- */
+/* ---------- Servicios (para mostrar nombre del servicio) ---------- */
 async function loadServices(){
   try {
     const resp = await window.supabaseRest('services', { query: '?select=*' });
@@ -137,7 +137,7 @@ async function loadAppointmentDates(){
   }
 }
 
-/* ---------- Render calendario ---------- */
+/* ---------- Renderizar calendario ---------- */
 function renderCalendar(){
   const grid = document.getElementById('calendarGrid');
   grid.innerHTML = '';
@@ -181,7 +181,7 @@ function renderCalendar(){
         cell.appendChild(badge);
       }
 
-      // click handler
+      // manejador de click
       cell.addEventListener('click', async () => {
         if (cell.classList.contains('inactive')) return;
         // marca visual
@@ -197,7 +197,7 @@ function renderCalendar(){
   }
 }
 
-/* ---------- Month navigation ---------- */
+/* ---------- Navegación de mes ---------- */
 function attachMonthNav(){
   document.getElementById('prevMonth').addEventListener('click', () => {
     currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
@@ -209,7 +209,7 @@ function attachMonthNav(){
   });
 }
 
-/* ---------- Load appointments for a date ---------- */
+/* ---------- Cargar citas para una fecha ---------- */
 async function loadAppointmentsFor(dateIso){
   const list = document.getElementById('appointmentsList');
   list.innerHTML = '<div class="muted">Cargando citas…</div>';
@@ -224,7 +224,7 @@ async function loadAppointmentsFor(dateIso){
       return;
     }
 
-    // render
+    // renderizar
     list.innerHTML = '';
     data.forEach(appt => {
       const div = document.createElement('div');
@@ -288,7 +288,7 @@ async function loadAppointmentsFor(dateIso){
   }
 }
 
-/* ---------- Update appointment status ---------- */
+/* ---------- Actualizar estado de cita ---------- */
 async function updateAppointmentStatus(id, newStatus, buttonEl, tagEl){
   // generic updater used when explicit status change is needed
   buttonEl.disabled = true;
@@ -300,7 +300,7 @@ async function updateAppointmentStatus(id, newStatus, buttonEl, tagEl){
     return alert('Error actualizando estado: ' + (err.message || err));
   }
   buttonEl.disabled = false;
-  // actualizar UI: cambiar tag text + estilo
+  // actualizar UI: cambiar texto de etiqueta y estilo
   tagEl.textContent = newStatus;
   tagEl.dataset.status = newStatus;
   const tagClass = (newStatus === 'realizada' || newStatus === 'completed') ? 'completed' : newStatus === 'cancelled' ? 'cancelled' : 'scheduled';
@@ -310,15 +310,15 @@ async function updateAppointmentStatus(id, newStatus, buttonEl, tagEl){
   renderCalendar();
 }
 
-// Toggle status realizada <-> programada (sin confirm para UX rápida)
-// Note: signature is (id, buttonEl, tagEl) — callers should pass the check button then the tag element.
+// Alternar estado realizada <-> programada (sin confirmación para agilizar UX)
+// Nota: la firma es (id, buttonEl, tagEl) — los llamantes deben pasar el botón de check y después el elemento tag.
 async function toggleAppointmentStatus(id, buttonEl, tagEl){
   // read freshest status from the tag dataset (keeps UI in sync if re-rendered)
   const current = (tagEl && tagEl.dataset && tagEl.dataset.status) ? tagEl.dataset.status : (tagEl && tagEl.textContent) || 'programada';
   const normalized = current.toString().toLowerCase();
   const newStatus = (normalized === 'realizada' || normalized === 'completed') ? 'programada' : 'realizada';
 
-  // optimistic UI update
+  // actualización optimista de la UI
   const prevText = tagEl ? tagEl.textContent : '';
   const prevClass = tagEl ? tagEl.className : '';
   if (tagEl) {
@@ -335,7 +335,7 @@ async function toggleAppointmentStatus(id, buttonEl, tagEl){
     await loadAppointmentDates();
     renderCalendar();
   } catch (err) {
-    // revert UI on error
+    // revertir UI en caso de error
     if (tagEl) {
       tagEl.textContent = prevText;
       tagEl.className = prevClass;
@@ -348,7 +348,7 @@ async function toggleAppointmentStatus(id, buttonEl, tagEl){
   }
 }
 
-/* ---------- Delete appointment ---------- */
+/* ---------- Eliminar cita ---------- */
 async function deleteAppointment(id, domEl){
   if (!confirm('¿Eliminar esta cita de la base de datos? Esta acción es irreversible.')) return;
   try {

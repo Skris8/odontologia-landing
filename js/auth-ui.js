@@ -1,4 +1,4 @@
-// Auth UI: injects a global login modal and controls the top-login button + admin link visibility
+// UI de autenticación: inyecta un modal global de login y controla el botón superior + visibilidad del enlace admin
 (function(){
   const ADMIN_NAV_ID = 'adminNavLink';
   const LOGIN_BTN_ID = 'loginTopBtn';
@@ -42,7 +42,7 @@
     modal.appendChild(box);
     document.body.appendChild(modal);
 
-    // handlers
+    // manejadores de evento
     document.getElementById('globalCancel').addEventListener('click', () => closeModal());
     document.getElementById('globalLoginBtn').addEventListener('click', async () => {
       const em = document.getElementById('globalAdmEmail').value.trim();
@@ -88,7 +88,7 @@
 
   function attach(){
     document.addEventListener('click', (e) => {
-      // close modal when clicking outside box
+      // cerrar modal al hacer clic fuera del cuadro
       const m = document.getElementById(MODAL_ID);
       if (!m) return;
       if (e.target === m) closeModal();
@@ -110,7 +110,7 @@
       });
     }
 
-    // initial state
+    // estado inicial
     updateAuthUI();
   }
 
